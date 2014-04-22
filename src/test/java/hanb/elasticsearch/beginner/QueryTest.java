@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 public class QueryTest {
 	private static final Logger log = LoggerFactory.getLogger(QueryTest.class);
 	
-	@Ignore
+	@Test
 	public void termQuery() throws Exception {
 		TermQueryBuilder termQueryBuilder = new TermQueryBuilder("unified_search", "tv");
 		String result = executeQuery(termQueryBuilder);
@@ -50,7 +50,7 @@ public class QueryTest {
 		log.debug(result);
 	}
 	
-	@Ignore
+	@Test
 	public void termsQuery() throws Exception {
 		TermsQueryBuilder termsQueryBuilder = new TermsQueryBuilder("unified_search", Arrays.asList("삼정","알지"));
 		termsQueryBuilder.minimumMatch(1);
@@ -60,7 +60,7 @@ public class QueryTest {
 		log.debug(result);
 	}
 	
-	@Ignore
+	@Test
 	public void matchQuery() throws Exception {
 		MatchQueryBuilder matchQueryBuilder = new MatchQueryBuilder("unified_search", "led tv");
 		matchQueryBuilder.operator(Operator.OR);
@@ -70,7 +70,7 @@ public class QueryTest {
 		log.debug(result);
 	}
 	
-	@Ignore
+	@Test
 	public void multiMatchQuery() throws Exception {
 		MultiMatchQueryBuilder multiMatchQueryBuilder = new MultiMatchQueryBuilder("카논 렌즈", "unified_search", "item_name");
 		String result = executeQuery(multiMatchQueryBuilder);
@@ -78,7 +78,7 @@ public class QueryTest {
 		log.debug(result);
 	}
 	
-	@Ignore
+	@Test
 	public void queryStringQuery() throws Exception {
 		QueryStringQueryBuilder queryStringQueryBuilder = new QueryStringQueryBuilder("LED AND 삼정 OR TV");
 		queryStringQueryBuilder.defaultField("unified_search");
@@ -88,7 +88,7 @@ public class QueryTest {
 		log.debug(result);
 	}
 	
-	@Ignore
+	@Test
 	public void idsQuery() throws Exception {
 		IdsQueryBuilder idsQueryBuilder = new IdsQueryBuilder("market");
 		idsQueryBuilder.addIds("1", "3", "5", "18");
@@ -98,7 +98,7 @@ public class QueryTest {
 		log.debug(result);
 	}
 	
-	@Ignore
+	@Test
 	public void prefixQuery() throws Exception {
 		PrefixQueryBuilder prefixQueryBuilder = new PrefixQueryBuilder("cat_third_id", "2_1");
 		String result = executeQuery(prefixQueryBuilder);
@@ -106,7 +106,7 @@ public class QueryTest {
 		log.debug(result);
 	}
 	
-	@Ignore
+	@Test
 	public void matchAllQuery() throws Exception {
 		MatchAllQueryBuilder matchAllQueryBuilder = new MatchAllQueryBuilder();
 		String result = executeQuery(matchAllQueryBuilder);
@@ -114,7 +114,7 @@ public class QueryTest {
 		log.debug(result);
 	}
 	
-	@Ignore
+	@Test
 	public void rangeQuery() throws Exception {
 		RangeQueryBuilder rangeQueryBuilder = new RangeQueryBuilder("item_sales_price");
 		rangeQueryBuilder.gte(1000000)
@@ -125,7 +125,7 @@ public class QueryTest {
 		log.debug(result);
 	}
 	
-	@Ignore
+	@Test
 	public void boolQuery() throws Exception {
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
 		TermsQueryBuilder termsQueryBuilder = new TermsQueryBuilder("unified_search", Arrays.asList("삼정", "tv"));
@@ -153,13 +153,13 @@ public class QueryTest {
 		log.debug(result);
 	}
 	
-	@Ignore
+	@Test
 	public void pagineQuery() throws Exception {
 		Settings settings;
 		Client client;
 		
 		settings = ImmutableSettings
-				.settingsBuilder()
+				.settingsBuilder().put("cluster.name", "myClusterName")
 				.build();
 		
 		client = buildClient(settings);
@@ -179,13 +179,13 @@ public class QueryTest {
 		log.debug(searchResponse.toString());
 	}
 	
-	@Ignore
+	@Test
 	public void filterQuery() throws Exception {
 		Settings settings;
 		Client client;
 		
 		settings = ImmutableSettings
-				.settingsBuilder()
+				.settingsBuilder().put("cluster.name", "myClusterName")
 				.build();
 		
 		client = buildClient(settings);
@@ -206,13 +206,13 @@ public class QueryTest {
 		log.debug(searchResponse.toString());
 	}
 	
-	@Ignore
+	@Test
 	public void sortQuery() throws Exception {
 		Settings settings;
 		Client client;
 		
 		settings = ImmutableSettings
-				.settingsBuilder()
+				.settingsBuilder().put("cluster.name", "myClusterName")
 				.build();
 		
 		client = buildClient(settings);
@@ -235,13 +235,13 @@ public class QueryTest {
 		log.debug(searchResponse.toString());
 	}
 	
-	@Ignore
+	@Test
 	public void termsFacetQuery() throws Exception {
 		Settings settings;
 		Client client;
 		
 		settings = ImmutableSettings
-				.settingsBuilder()
+				.settingsBuilder().put("cluster.name", "myClusterName")
 				.build();
 		
 		client = buildClient(settings);
@@ -261,7 +261,7 @@ public class QueryTest {
 		log.debug(searchResponse.toString());
 	}
 	
-	@Ignore
+	@Test
 	public void termsStatsQuery() throws Exception {
 		//nested field 에 대한 facet 기능으로 field mapping 은 아래와 같은 구조를 만족해야 한다.
 		// 각 key field 명으로 grouping 을 수행 하고 value field 에 값을 가지고 sum 연산을 한다.
@@ -275,13 +275,13 @@ public class QueryTest {
 		*/
 	}
 	
-	@Ignore
+	@Test
 	public void statisticalFacetQuery() throws Exception {
 		Settings settings;
 		Client client;
 		
 		settings = ImmutableSettings
-				.settingsBuilder()
+				.settingsBuilder().put("cluster.name", "myClusterName")
 				.build();
 		
 		client = buildClient(settings);
@@ -301,13 +301,13 @@ public class QueryTest {
 		log.debug(searchResponse.toString());
 	}
 	
-	@Ignore
+	@Test
 	public void highlightQuery() throws Exception {
 		Settings settings;
 		Client client;
 		
 		settings = ImmutableSettings
-				.settingsBuilder()
+				.settingsBuilder().put("cluster.name", "myClusterName")
 				.build();
 		
 		client = buildClient(settings);
@@ -329,7 +329,7 @@ public class QueryTest {
 		log.debug(searchResponse.toString());
 	}
 	
-	@Ignore
+	@Test
 	public void termBoostingQuery() throws Exception {
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
 		QueryStringQueryBuilder queryStringQueryBuilder = new QueryStringQueryBuilder("카논^2 and 니쿤");
@@ -344,7 +344,7 @@ public class QueryTest {
 		log.debug(result);
 	}
 	
-	@Ignore
+	@Test
 	public void fieldBoostingQuery() throws Exception {
 		TermsQueryBuilder termsQueryBuilder = new TermsQueryBuilder("unified_search", Arrays.asList("카논","니쿤"));
 		termsQueryBuilder.minimumMatch(1);
@@ -372,7 +372,7 @@ public class QueryTest {
 		Client client;
 		
 		settings = ImmutableSettings
-				.settingsBuilder()
+				.settingsBuilder().put("cluster.name", "myClusterName")
 				.build();
 		
 		client = buildClient(settings);
