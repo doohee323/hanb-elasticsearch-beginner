@@ -2,13 +2,14 @@ package hanb.elasticsearch.beginner;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.Date;
+import java.util.List;
 
 import org.elasticsearch.action.WriteConsistencyLevel;
 import org.elasticsearch.action.admin.indices.optimize.OptimizeRequest;
 import org.elasticsearch.action.admin.indices.optimize.OptimizeResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.support.broadcast.BroadcastOperationThreading;
 import org.elasticsearch.action.support.replication.ReplicationType;
@@ -17,6 +18,8 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -46,43 +49,44 @@ public class IndexingTest {
 				기타		2_2_3
 
 */
-	@Ignore
+	@Test
+//	@Ignore
 	public void addIndexing() throws Exception {
 		Settings settings;
 		Client client;
-		String setting = "";
-		String mapping = "";
 		
 		settings = ImmutableSettings
 				.settingsBuilder()
 				.build();
 		
 		client = buildClient(settings);
-		IndexRequestBuilder requestBuilder;
-		IndexResponse response;
 
-		requestBuilder = client.prepareIndex("open_market", "market");
+		XContentBuilder builder = XContentFactory.jsonBuilder()
+			    .startObject()
+			        .field("user", "kimchy")
+			        .field("postDate", new Date())
+			        .field("message", "trying out Elasticsearch")
+			    .endObject();
+		String json = builder.string();
+		System.out.println("json:" + json);
 		
-		BufferedReader br = new BufferedReader(new FileReader("schema/market.row.json"));
-		int id = 1;
+		IndexResponse response = client.prepareIndex("twitter", "tweet", "1")
+		        .setSource(builder)
+		        .execute()
+		        .actionGet();
 		
-	    try {
-	        String line = "";
-
-	        while ((line = br.readLine()) != null) {
-	        	response = requestBuilder.setId(String.valueOf(id))
-	        		.setSource(line)
-	        		.execute()
-	        		.actionGet();
-	        	log.debug(response.getId());
-	            id++;
-	        }
-	    } finally {
-	        br.close();
-	    }
+		// Index name
+		String _index = response.getIndex();
+		// Type name
+		String _type = response.getType();
+		// Document ID (generated or not)
+		String _id = response.getId();
+		// Version (if it's the first time you index this document, you will get: 1)
+		long _version = response.getVersion();
 	}
 	
-	@Test
+//	@Test
+	@Ignore
 	public void bulkIndexing() throws Exception {
 		Settings settings;
 		Client client;
@@ -200,14 +204,21 @@ public class IndexingTest {
      * @throws Exception
      */
 	protected Client buildClient(Settings settings) throws Exception {
-		TransportClient client = new TransportClient(settings);
-		String nodes = "localhost:9300";
-		String[] nodeList = nodes.split(",");
-		int nodeSize = nodeList.length;
-
-		for (int i = 0; i < nodeSize; i++) {
-			client.addTransportAddress(toAddress(nodeList[i]));
-		}
+//		TransportClient client = new TransportClient(settings);
+//		String nodes = "localhost:9300,localhost:9301,localhost:9302";
+//		String[] nodeList = nodes.split(",");
+//		int nodeSize = nodeList.length;
+//
+//		for (int i = 0; i < nodeSize; i++) {
+//			client.addTransportAddress(toAddress(nodeList[i]));
+//		}
+		
+		Settings settings2 = ImmutableSettings.settingsBuilder()
+		        .put("cluster.name", "myClusterName").build();
+		Client client = new TransportClient(settings2)
+        .addTransportAddress(new InetSocketTransportAddress("localhost", 9300))
+        .addTransportAddress(new InetSocketTransportAddress("localhost", 9301))
+        .addTransportAddress(new InetSocketTransportAddress("localhost", 9302));
 
 		return client;
 	}
